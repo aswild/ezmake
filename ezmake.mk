@@ -6,7 +6,7 @@
 CLEANFILES =
 
 # First target is to build, unless user specified something else
-ez-build: $(CC_PROGRAMS)
+ez-build: $(CC_PROGRAMS) $(CXX_PROGRAMS)
 .PHONY: ez-build
 
 # Macro to get per-target XX_YYFLAGS (also applies for LDADD)
@@ -51,7 +51,17 @@ $(1) : $$($(1)_OBJECTS)
 	$$(CC) $$(strip $$($(1)_CFLAGS) $$(CFLAGS) $$($(1)_LDFLAGS) $$(LDFLAGS)) -o $$@ $$^ $$($(1)_LDADD) $$(LIBS)
 endef # cc_program
 
+# C++ program
+define cxx_program
+$$(eval $$(call target_common,$(1),cpp,CXX,CXX))
+
+# Linking rule
+$(1) : $$($(1)_OBJECTS)
+	$$(CXX) $$(strip $$($(1)_CXXFLAGS) $$(CXXFLAGS) $$($(1)_LDFLAGS) $$(LDFLAGS)) -o $$@ $$^ $$($(1)_LDADD) $$(LIBS)
+endef # cxx_program
+
 $(foreach prog,$(CC_PROGRAMS),$(eval $(call cc_program,$(prog))))
+$(foreach prog,$(CXX_PROGRAMS),$(eval $(call cxx_program,$(prog))))
 
 # General targets
 

@@ -12,4 +12,8 @@ bar_CFLAGS = -DBAR
 bar_LDFLAGS = -DBAR_LDFLAGS
 bar_LDADD = -ldl
 
+CXX_PROGRAMS = baz
+baz_SOURCES = baz.cpp
+baz_CXXFLAGS = -DBAZ_CXXFLAGS
+
 include ../ezmake.mk
