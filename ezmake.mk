@@ -6,7 +6,7 @@
 CLEANFILES =
 
 # First target is to build, unless user specified something else
-ez-build: $(CC_PROGRAMS) $(CXX_PROGRAMS)
+ez-build: $(CC_PROGRAMS) $(CXX_PROGRAMS) $(CC_ALIBS) $(CXX_ALIBS) $(CC_SOLIBS) $(CXX_SOLIBS)
 .PHONY: ez-build
 
 # Macro to get per-target XX_YYFLAGS (also applies for LDADD)
@@ -45,8 +45,6 @@ endef # target_common
 # C program
 define cc_program
 $$(eval $$(call target_common,$(1),c,C,CC))
-
-# Linking rule
 $(1) : $$($(1)_OBJECTS)
 	$$(CC) $$(strip $$($(1)_CFLAGS) $$(CFLAGS) $$($(1)_LDFLAGS) $$(LDFLAGS)) -o $$@ $$^ $$($(1)_LDADD) $$(LIBS)
 endef # cc_program
@@ -54,14 +52,66 @@ endef # cc_program
 # C++ program
 define cxx_program
 $$(eval $$(call target_common,$(1),cpp,CXX,CXX))
-
-# Linking rule
 $(1) : $$($(1)_OBJECTS)
 	$$(CXX) $$(strip $$($(1)_CXXFLAGS) $$(CXXFLAGS) $$($(1)_LDFLAGS) $$(LDFLAGS)) -o $$@ $$^ $$($(1)_LDADD) $$(LIBS)
 endef # cxx_program
 
+# C static library
+define cc_alib
+$$(eval $$(call target_common,$(1),c,C,CC))
+$(1) : $$($(1)_OBJECTS)
+	$$(AR) rcs $$@ $$^
+endef
+
+# C++ static library
+define cxx_alib
+$$(eval $$(call target_common,$(1),cpp,CXX,CXX))
+$(1) : $$($(1)_OBJECTS)
+	$$(AR) rcs $$@ $$^
+endef
+
+# C shared library
+define cc_solib
+$$(eval $$(call target_common,$(1),c,C,CC))
+
+# Shared libraries need to have -fPIC somewhere in CFLAGS
+ifeq ($$(findstring -fPIC,$$($(1)_CFLAGS)),)
+ifeq ($$(findstring -fPIC,$$(CFLAGS)),)
+$(1)_CFLAGS += -fPIC
+endif
+else
+ifeq ($$(findstring -fPIC,$$($(1)_CFLAGS)),)
+ifeq ($$(findstring -fPIC,$$(CFLAGS)),)
+$(1)_CFLAGS += -fPIC
+endif
+endif
+endif
+endef # cc_solib
+
+# C++ shared library
+define cxx_solib
+$$(eval $$(call target_common,$(1),cpp,CXX,CXX))
+
+# Shared libraries need to have -fPIC somewhere in CXXFLAGS
+ifeq ($$(findstring -fPIC,$$($(1)_CXXFLAGS)),)
+ifeq ($$(findstring -fPIC,$$(CXXFLAGS)),)
+$(1)_CXXFLAGS += -fPIC
+endif
+else
+ifeq ($$(findstring -fPIC,$$($(1)_CXXFLAGS)),)
+ifeq ($$(findstring -fPIC,$$(CXXFLAGS)),)
+$(1)_CXXFLAGS += -fPIC
+endif
+endif
+endif
+endef # cxx_solib
+
 $(foreach prog,$(CC_PROGRAMS),$(eval $(call cc_program,$(prog))))
 $(foreach prog,$(CXX_PROGRAMS),$(eval $(call cxx_program,$(prog))))
+$(foreach prog,$(CC_ALIBS),$(eval $(call cc_alib,$(prog))))
+$(foreach prog,$(CXX_ALIBS),$(eval $(call cxx_alib,$(prog))))
+$(foreach prog,$(CC_SOLIBS),$(eval $(call cc_solib,$(prog))))
+$(foreach prog,$(CXX_SOLIBS),$(eval $(call cxx_solib,$(prog))))
 
 # General targets
 
