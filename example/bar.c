@@ -1,11 +1,9 @@
 #include <stdio.h>
-
-void bar2();
+#include "libbar.h"
 
 int main()
 {
     printf("Hello bar!\n");
-    bar2();
-    printf("Bye\n");
+    bar_main();
     return 0;
 }

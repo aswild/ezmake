@@ -1,11 +1,10 @@
 #include <stdio.h>
-
-void foo2();
+#include "libfoo.h"
 
 int main()
 {
     printf("Hello foo!\n");
-    foo2();
-    printf("Bye\n");
+    libfoo_one();
+    libfoo_two();
     return 0;
 }
