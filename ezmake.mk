@@ -1,9 +1,26 @@
 # ezmake.mk
 # Allen Wild
 # Simple C/C++ Makefile framework with automake-like syntax
-# <MIT License>
-
-CLEANFILES =
+#
+# Copyright (c) 2017 Allen Wild <allenwild93@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 # First target is to build, unless user specified something else
 ez-build: $(CC_PROGRAMS) $(CXX_PROGRAMS) $(CC_ALIBS) $(CXX_ALIBS) $(CC_SOLIBS) $(CXX_SOLIBS)
@@ -116,6 +133,7 @@ $(2) : $$($(1)_OBJECTS)
 	$$(CXX) $$(strip $$($(1)_CXXFLAGS) $$(CXXFLAGS) $$($(1)_LDFLAGS) $$(LDFLAGS)) -shared -o $$@ $$(filter %.o,$$^) $$($(1)_LDADD) $$(LIBS)
 endef # cxx_solib
 
+# Use the above macros to generate the appropriate rules
 $(foreach prog,$(CC_PROGRAMS),$(eval $(call cc_program,$(call san_target_name,$(prog)),$(prog))))
 $(foreach prog,$(CXX_PROGRAMS),$(eval $(call cxx_program,$(call san_target_name,$(prog)),$(prog))))
 $(foreach prog,$(CC_ALIBS),$(eval $(call cc_alib,$(call san_target_name,$(prog)),$(prog))))
@@ -123,8 +141,7 @@ $(foreach prog,$(CXX_ALIBS),$(eval $(call cxx_alib,$(call san_target_name,$(prog
 $(foreach prog,$(CC_SOLIBS),$(eval $(call cc_solib,$(call san_target_name,$(prog)),$(prog))))
 $(foreach prog,$(CXX_SOLIBS),$(eval $(call cxx_solib,$(call san_target_name,$(prog)),$(prog))))
 
-# General targets
-
+# clean and other targets
 clean:
 	rm -f $(CLEANFILES)
 .PHONY: clean
