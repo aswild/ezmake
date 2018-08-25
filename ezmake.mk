@@ -53,7 +53,7 @@ $(1)_DEPS    = $$(patsubst %.o,%.d,$$($(1)_OBJECTS))
 CLEANFILES  += $(5) $$($(1)_OBJECTS) $$($(1)_DEPS)
 
 # Define target-specific flags variables
-$$(foreach flag,CFLAGS CXXFLAGS LDFLAGS LDADD,$$(eval $$(call target_flags,$(1),$$(flag))))
+$$(foreach flag,CFLAGS CPPFLAGS CXXFLAGS LDFLAGS LDADD,$$(eval $$(call target_flags,$(1),$$(flag))))
 
 # file compilation rule
 $$($(1)_OBJECTS) : %.o : %.$(2)
